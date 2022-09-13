@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>user2</title>
+</head>
+<body>
+    <textarea id="input_box"></textarea>
+    <button id="jj">send</button>
+        <p id="display"></p>
+    <div>
+        <ul id="message_box">
+
+        </ul>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.js"></script>
+    <script type="text/javascript">
+        let socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/122/");
+
+        socket.onopen = function(e) {
+            console.log(e)
+            // alert("[open] Connection established");
+            // alert("Sending to server");
+            // socket.send("My name is John");
+            $('#jj').click(function(){
+                 user_id = $(this).attr('user-id')
+                 reciever_id = $(this).attr('reciever_id')
+                 message = $('message_textbox').val()
+
+
+                // alert("123")ss
+                // data = {"user_id":130, "reciever_id":120, "thread_id":4, "message": "Hi"}
+                // console.log(data)
+
+                message = $("#input_box").val()
+                data = {"user_id":122, "reciever_id": 120, "thread_id": 3, "message": message}
+                // socket.send(JSON.stringify(data));
+                // document.getElementById("display").innerHTML = JSON.stringify(data);
+                // let message = "";
+                        $("#message_box").append("<li>Sender Message :  "+message+"</li>")
+                socket.send(JSON.stringify(data));
+            })
+        };
+
+
+        socket.onmessage = function(e) {
+             console.log(e)
+             data = e.data
+             data = JSON.parse(data)
+             console.log(data)
+             if(data['message']){
+                    $("#message_box").append("<li>Reciever Message:  "+data['message']+"</li>")
+                }
+
+
+
+       };
+
+
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                // e.g. server process killed or network down
+                // event.code is usually 1006 in this case
+                alert('[close] Connection died');
+            }
+        };
+
+        socket.onerror = function(error) {
+            alert(`[error] ${error.message}`);
+        };
+    </script>
+</body>
+</html>
